@@ -5,33 +5,43 @@ class HashMap {
     this.length = 0;
     this._slots = [];
     this._capacity = initialCapacity;
+    this._deleted = 0;
   }
 
-  static _hashString(string) {
-    let hash = 5381;
-    for (let i=0; i<string.length; i++) {
-      hash = (hash << 5) + hash + string.charCodeAt(i);
-      hash = hash & hash;
+  get(key) {
+    const index = this._findSlot(key);
+    if (this._slots[index] === undefined) {
+      throw new Error('Key error');
     }
-    return hash >>> 0;
+    return this._slots[index].value;
   }
 
   set(key, value) {
-    const loadRatio = (this.length + 1) / this._capacity;
+    const loadRatio = (this.length + this._deleted + 1) / this._capacity;
     if (loadRatio > HashMap.MAX_LOAD_RATIO) {
       this._resize(this._capacity * HashMap.SIZE_RATIO);
     }
 
     const index = this._findSlot(key);
-    //console.log('index ', index);
     if(!this._slots[index]) {
       this.length++; 
     }
     this._slots[index] = {
       key,
-      value
+      value,
+      deleted: false
     };
+  }
 
+  remove(key) {
+    const index = this._findSlot(key);
+    const slot = this._slots[index];
+    if (slot === undefined) {
+      throw new Error('Key error');
+    }
+    slot.deleted = true;
+    this.length--;
+    this._deleted++;
   }
 
   _findSlot(key) {
@@ -41,7 +51,7 @@ class HashMap {
     for (let i=start; i<start + this._capacity; i++) {
       const index = i % this._capacity;
       const slot = this._slots[index];
-      if (slot === undefined || slot.key === key) {     // second eq "=="?
+      if (slot === undefined || (slot.key === key && !slot.deleted)) {
         return index;
       }
     }
@@ -52,33 +62,41 @@ class HashMap {
     this._capacity = size;
     // Reset the length - it will get rebuilt as you add the items back
     this.length = 0;
+    this._deleted = 0;
     this._slots = [];
 
     for (const slot of oldSlots) {
-      if (slot !== undefined) {
+      if (slot !== undefined && !slot.deleted) {
         this.set(slot.key, slot.value);
       }
     }
   }
 
-
-
-  
+  static _hashString(string) {
+    let hash = 5381;
+    for (let i=0; i<string.length; i++) {
+      hash = (hash << 5) + hash + string.charCodeAt(i);
+      hash = hash & hash;
+    }
+    return hash >>> 0;
+  }
 }
 
 HashMap.MAX_LOAD_RATIO = 0.9;
 HashMap.SIZE_RATIO = 3;
 
-// const myHashMap = new HashMap();
-// console.log(myHashMap.length);
-// myHashMap.set("wendy", "november");
-// console.log('---- first set ----');
-// console.log(myHashMap);
-// console.log(myHashMap.length);
-// myHashMap.set("wendy", "december");
-// console.log(myHashMap);
-// myHashMap.set("wendy", "january");
-// console.log(myHashMap);
+const myHashMap = new HashMap();
 
-// myHashMap.set("giri", "may");
-// console.log(myHashMap);
+myHashMap.set("Hobbit", "Bilbo");
+myHashMap.set("Wizard", "Gandolf");
+myHashMap.set("Hobbit", "Frodo");
+myHashMap.set("Human", "Aragon");
+myHashMap.set("Elf", "Legolas");
+console.log(myHashMap);
+myHashMap.set("Maiar", "The Necromancer");
+myHashMap.set("RingBearer", "Gollum");
+myHashMap.set("LadyOfLight", "Galadriel");
+myHashMap.set("HalfElven", "Arwen");
+myHashMap.set("Ent", "Treebeard");
+myHashMap.set("Maiar", "Sauron");
+console.log(myHashMap);
