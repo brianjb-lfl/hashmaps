@@ -100,3 +100,6 @@ myHashMap.set("HalfElven", "Arwen");
 myHashMap.set("Ent", "Treebeard");
 myHashMap.set("Maiar", "Sauron");
 console.log(myHashMap);
+
+
+exports.HashMap = HashMap;
