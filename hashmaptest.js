@@ -14,7 +14,15 @@ class HashMap {
     if (this._slots[index] === undefined) {
       throw new Error('Key error');
     }
-    return this._slots[index].value;
+    for (let current = this._slots[index].head; current; current = current.next){
+      
+      if(current.value.key === key){
+        return current.value.value;
+        
+      }
+        
+    }
+    return 'key not found';
   }
 
   set(key, value) {
@@ -118,26 +126,46 @@ myHashMap.set('LadyOfLight', 'Galadriel');
 myHashMap.set('HalfElven', 'Arwen');
 myHashMap.set('Ent', 'Treebeard');
 myHashMap.set('Maiar', 'Sauron');
-function PrintList(listIn){ 
-  ////if (listIn.head !== undefined){
-  let current = listIn.head;
-  if(!current) { return 0; }
-  while(current.next !== null)
-  { console.log(current.value); 
-    console.log(current);
-    current = current.next;
-  }
-  console.log(current.value);
-  console.log(current);
-}
-//}
-for (let i = 0; i < 8; i++){
-  if (myHashMap._slots[i]){
-    console.log('---------------');
-    PrintList(myHashMap._slots[i]);
-  }
+// function PrintList(listIn){ 
+//   ////if (listIn.head !== undefined){
+//   let current = listIn.head;
+//   if(!current) { return 0; }
+//   while(current.next !== null)
+//   { console.log(current.value); 
+//     console.log(current);
+//     current = current.next;
+//   }
+//   console.log(current.value);
+//   console.log(current);
+// }
+// //}
+// for (let i = 0; i < 8; i++){
+//   if (myHashMap._slots[i]){
+//     console.log('---------------');
+//     PrintList(myHashMap._slots[i]);
+//   }
   
-}
+// }
+
+//console.log(myHashMap.get('Human'));
 
 
 exports.HashMap = HashMap;
+
+function isPalindrome(str){
+  const newhash = new HashMap();
+  for (let i =0; i < str.length; i++){
+    newhash.set(str[i], str[i]);
+  }
+
+  for (let i = 0; i < str.length; i++){
+    let currentvalue = newhash.get(str[i]);
+    if(currentvalue === 'key not found'){
+      currentvalue = 0;
+    } 
+    newhash.set(str[i], currentvalue+1);
+  }
+  console.log(newhash);
+}
+
+isPalindrome('madam');
