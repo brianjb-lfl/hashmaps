@@ -29,6 +29,7 @@ class LinkedList {
       this.head = newNode;
     }
     else {
+      
       const node = this._find(index - 1);
       newNode.next = node.next;
       node.next = newNode;
