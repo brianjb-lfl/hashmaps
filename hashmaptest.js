@@ -6,7 +6,6 @@ class HashMap {
     this.length = 0;
     this._slots = [];
     this._capacity = initialCapacity;
-    //this._deleted = 0;
   }
 
   get(key) {
@@ -20,39 +19,29 @@ class HashMap {
         return current.value.value;
         
       }
-        
     }
-    return 'key not found';
+    throw new Error('Key error');
   }
 
   set(key, value) {
-    // const loadRatio = (this.length + this._deleted + 1) / this._capacity;
-    // if (loadRatio > HashMap.MAX_LOAD_RATIO) {
-    //   this._resize(this._capacity * HashMap.SIZE_RATIO);
-    // }
 
     const index = this._findSlot(key);
     
     if(!this._slots[index]) {
       this._slots[index] = new LinkedList();
       this.length++; 
-      this._slots[index].insert(0, {key,
-        value}
-      // deleted: false}
+      this._slots[index].insert(0, {key, value}
       );
-    } else {
+    } 
+    else {
       for (let current = this._slots[index].head; current; current = current.next){
-      
         if(current.value.key === key){
           current.value.value = value;
           return;
         }
-        
       }
-      this._slots[index].insert(0, {key,
-        value});
+      this._slots[index].insert(0, {key, value});
     }
-    
   }
 
   remove(key) {
@@ -61,35 +50,20 @@ class HashMap {
     if (slot === undefined) {
       throw new Error('Key error');
     }
-    //slot.deleted = true;
     this.length--;
-    //this._deleted++;
   }
 
   _findSlot(key) {
     const hash = HashMap._hashString(key);
     const start = hash % this._capacity;
 
-    // for (let i=start; i<start + this._capacity; i++) {
     return start % this._capacity;
-    //if(this._slots[index]){
-    // const list = new LinkedList();
-    // list.push
-    //  this._slots[index].next = key;
-    // }
-    // const slot = this._slots[index];
-    // if (slot === undefined || (slot.key === key && !slot.deleted)) {
-    //   return index;
-    // }
-    // }
   }
 
   _resize(size) {
     const oldSlots = this._slots;
     this._capacity = size;
-    // Reset the length - it will get rebuilt as you add the items back
     this.length = 0;
-    // this._deleted = 0;
     this._slots = [];
 
     for (const slot of oldSlots) {
@@ -119,53 +93,71 @@ myHashMap.set('Wizard', 'Gandolf');
 myHashMap.set('Hobbit', 'Frodo');
 myHashMap.set('Human', 'Aragon');
 myHashMap.set('Elf', 'Legolas');
-//console.log(myHashMap._slots);
 myHashMap.set('Maiar', 'The Necromancer');
 myHashMap.set('RingBearer', 'Gollum');
 myHashMap.set('LadyOfLight', 'Galadriel');
 myHashMap.set('HalfElven', 'Arwen');
 myHashMap.set('Ent', 'Treebeard');
 myHashMap.set('Maiar', 'Sauron');
-// function PrintList(listIn){ 
-//   ////if (listIn.head !== undefined){
-//   let current = listIn.head;
-//   if(!current) { return 0; }
-//   while(current.next !== null)
-//   { console.log(current.value); 
-//     console.log(current);
-//     current = current.next;
-//   }
-//   console.log(current.value);
-//   console.log(current);
-// }
-// //}
-// for (let i = 0; i < 8; i++){
-//   if (myHashMap._slots[i]){
-//     console.log('---------------');
-//     PrintList(myHashMap._slots[i]);
-//   }
-  
-// }
 
-//console.log(myHashMap.get('Human'));
+GetSelected(myHashMap);
+
+function PrintList(listIn){ 
+  let current = listIn.head;
+  if(!current) { return 0; }
+  while(current.next !== null)
+  { console.log(current);
+    console.log(' ');
+    current = current.next;
+  }
+  console.log(current);
+  console.log(' ');
+}
+
+function GetSelected(inHash) {
+  for (let i = 0; i < 8; i++){
+    if (inHash._slots[i]){
+      console.log(' ');
+      console.log('---------------');
+      PrintList(myHashMap._slots[i]);
+    }
+  }
+}
+
+
+// ***** PALINDROME
+
+function isPalindrome(str){
+  let currentValue;
+  let oddCt = 0;
+  const newhash = new HashMap();
+
+  for (let i = 0; i < str.length; i++){
+    try {
+      currentValue = newhash.get(str[i]);
+    }
+    catch(error) {
+      currentValue = 0;
+    }
+    newhash.set(str[i], currentValue + 1);
+  }
+
+  for (let i = 0; i < 8; i++){
+    if (newhash._slots[i]){
+      for(let current = newhash._slots[i].head; current; current = current.next){
+        if(current.value.value % 2 !== 0) {
+          oddCt++;
+          if(oddCt > 1) {
+            return false;
+          }
+        }
+      }
+    }
+  }
+  return true;
+}
+
+//console.log(isPalindrome('madame'));
 
 
 exports.HashMap = HashMap;
-
-function isPalindrome(str){
-  const newhash = new HashMap();
-  for (let i =0; i < str.length; i++){
-    newhash.set(str[i], str[i]);
-  }
-
-  for (let i = 0; i < str.length; i++){
-    let currentvalue = newhash.get(str[i]);
-    if(currentvalue === 'key not found'){
-      currentvalue = 0;
-    } 
-    newhash.set(str[i], currentvalue+1);
-  }
-  console.log(newhash);
-}
-
-isPalindrome('madam');
